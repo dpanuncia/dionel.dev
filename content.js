@@ -18,16 +18,15 @@ const CONTENT = {
   //  PERSONAL INFO — update once, shows everywhere
   // ----------------------------------------------------------
   info: {
-    name:        "YOUR NAME",
+    name:        "Dionel Panuncia",
     title:       "Network & Cybersecurity Engineer",
-    location:    "Your City, State",
-    school:      "Your School — Your Degree",
-    schoolDates: "YYYY – YYYY (Expected)",
-    email:       "you@email.com",
-    github:      "github.com/yourhandle",
-    linkedin:    "linkedin.com/in/yourname",
-    hackthebox:  "app.hackthebox.com/profile/you",
-    tryhackme:   "tryhackme.com/p/yourhandle",
+    location:    "Grand Rapids, Michigan",
+    school:      "Grand Rapids Community College — Network Administration" "Davenport University - Cyber Defense",
+    schoolDates: "2023 – 2025"
+    "2026-2026(Expected)",
+    email:       "dpanuncia@gmail.com",
+    github:      "github.com/dpanuncia",
+    linkedin:    "linkedin.com/in/dpanuncia",
     resumeUrl:   "https://drive.google.com/your-resume-link",
     // What shows on the home page learning line
     currentlyLearning: ["Sec+ exam prep", "CCNA labs", "Python automation"],
@@ -41,7 +40,7 @@ const CONTENT = {
   ctfStats: [
     { platform: "HackTheBox",   stat: "Rank: Pro Hacker", pct: 55 },
     { platform: "TryHackMe",    stat: "47 rooms",          pct: 70 },
-    { platform: "Cisco NetAcad",stat: "12 courses",        pct: 80 },
+    { platform: "Cisco NetAcad", stat: "12 courses",        pct: 80 },
   ],
 
   // ----------------------------------------------------------
@@ -49,12 +48,10 @@ const CONTENT = {
   //  status: "earned" | "progress" | "planned"
   // ----------------------------------------------------------
   certs: [
-    { name: "CompTIA A+",                vendor: "CompTIA · Core 1 & Core 2",       status: "earned"   },
-    { name: "CompTIA Network+",          vendor: "CompTIA · N10-009",               status: "earned"   },
+    { name: "URSCA-Unifi Routing, Switching and CyberSecurity Adminstrator",                vendor: "Wifi-U",       status: "earned"   },
     { name: "CompTIA Security+",         vendor: "CompTIA · SY0-701",               status: "progress" },
     { name: "Cisco CCNA",                vendor: "Cisco · 200-301",                 status: "planned"  },
-    { name: "CEH — Certified Ethical Hacker", vendor: "EC-Council",                status: "planned"  },
-    { name: "OSCP",                      vendor: "Offensive Security · Long-term",  status: "planned"  },
+
   ],
 
   // ----------------------------------------------------------
