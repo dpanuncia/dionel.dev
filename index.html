@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio — Loading...</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--g:#00ff9d;--gd:#00c97a;--bg:#080d08;--surf:#0d140d;--bdr:#1a2e1a;--txt:#b8ffd4;--mut:#3a6645;--red:#ff4444;--amb:#ffb800;--blue:#00cfff;--purple:#c084fc}
+html,body{height:100%;background:var(--bg)}
+body{font-family:'Share Tech Mono',monospace;color:var(--g);overflow-x:hidden}
+.scanlines{position:fixed;inset:0;pointer-events:none;z-index:999;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px)}
+.gridbg{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(0,255,157,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,157,0.025) 1px,transparent 1px);background-size:36px 36px}
+/* OVERLAY */
+#overlay{position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;align-items:center;justify-content:center;transition:opacity 1s}
+#overlay.hidden{opacity:0;pointer-events:none}
+.boot-text{font-size:13px;line-height:2.1;color:var(--g);max-width:520px;padding:2rem}
+/* TOPBAR */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:10px 20px;border-bottom:1px solid var(--bdr);background:rgba(8,13,8,0.98);backdrop-filter:blur(4px)}
+.tl{display:flex;align-items:center;gap:12px}
+.dot{width:9px;height:9px;border-radius:50%}
+.dr{background:var(--red)}.da{background:var(--amb)}.dg{background:var(--g)}
+.tb-title{font-size:11px;color:var(--mut)}
+.hbg{cursor:pointer;display:flex;flex-direction:column;gap:5px;padding:4px;z-index:200}
+.hbg span{display:block;width:20px;height:2px;background:var(--g);transition:all 0.3s}
+.hbg.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hbg.open span:nth-child(2){opacity:0}
+.hbg.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+/* SIDEBAR */
+#sidebar{position:fixed;left:0;top:0;bottom:0;width:280px;background:var(--surf);border-right:1px solid var(--bdr);z-index:90;transform:translateX(-100%);transition:transform 0.32s cubic-bezier(0.4,0,0.2,1);padding-top:56px;overflow-y:auto}
+#sidebar.open{transform:translateX(0)}
+.nh{padding:14px 20px 6px;font-size:9px;color:var(--mut);letter-spacing:2px}
+.ni{display:flex;align-items:center;gap:10px;padding:11px 20px;cursor:pointer;color:var(--txt);font-size:12px;border-left:2px solid transparent;transition:all 0.18s;user-select:none}
+.ni:hover,.ni.active{color:var(--g);border-left-color:var(--g);background:rgba(0,255,157,0.05)}
+.ni .ps{color:var(--gd);font-size:10px;min-width:22px}
+.ndiv{height:1px;background:var(--bdr);margin:6px 20px}
+/* CONTENT AREA */
+#content{position:relative;z-index:1;padding:80px 28px 60px;max-width:860px;margin:0 auto}
+.page{display:none}
+.page.active{display:block}
+/* COMMON COMPONENTS */
+.sec-title{font-family:'Orbitron',monospace;font-size:15px;color:var(--g);margin-bottom:18px;letter-spacing:1px}
+.twind{border:1px solid var(--bdr);border-radius:5px;overflow:hidden;margin-bottom:16px}
+.thead{background:var(--surf);padding:8px 14px;display:flex;align-items:center;gap:7px;border-bottom:1px solid var(--bdr)}
+.thead span{font-size:10px;color:var(--mut);margin-left:4px}
+.tbody{padding:16px;font-size:12px;line-height:1.9}
+.pl{display:flex;gap:8px;align-items:flex-start;margin-bottom:4px}
+.ps2{color:var(--g);white-space:nowrap;font-size:12px}
+.pc{color:var(--txt)}
+.out{color:var(--mut);padding-left:0;margin:8px 0}
+.hl{color:var(--g)}
+.hl2{color:var(--blue)}
+.hlp{color:var(--purple)}
+.hla{color:var(--amb)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.grid2{grid-template-columns:1fr}}
+.card{border:1px solid var(--bdr);border-radius:4px;padding:14px;transition:border-color 0.2s,background 0.2s;cursor:default}
+.card:hover{border-color:var(--g);background:rgba(0,255,157,0.04)}
+.ctag{font-size:9px;color:var(--gd);letter-spacing:1px;margin-bottom:5px}
+.cname{font-size:12px;color:var(--txt);margin-bottom:6px;font-weight:bold}
+.cdesc{font-size:10px;color:var(--mut);line-height:1.6}
+.cbadge{display:inline-block;margin-top:8px;padding:2px 8px;border:1px solid var(--bdr);border-radius:2px;font-size:9px;color:var(--mut)}
+.pills{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+.pill{padding:3px 10px;border:1px solid var(--gd);border-radius:2px;font-size:10px;color:var(--gd)}
+.blog-card{border:1px solid var(--bdr);border-radius:4px;padding:16px;margin-bottom:12px;cursor:pointer;transition:all 0.2s}
+.blog-card:hover{border-color:var(--g);background:rgba(0,255,157,0.03)}
+.blog-meta{font-size:9px;color:var(--mut);margin-bottom:6px;display:flex;gap:14px;flex-wrap:wrap}
+.blog-title{font-size:13px;color:var(--txt);margin-bottom:6px;line-height:1.5}
+.blog-preview{font-size:10px;color:var(--mut);line-height:1.7}
+.tabs{display:flex;margin-bottom:16px;border-bottom:1px solid var(--bdr)}
+.tab{padding:8px 16px;font-size:11px;color:var(--mut);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.18s}
+.tab:hover{color:var(--txt)}
+.tab.active{color:var(--g);border-bottom-color:var(--g)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+.exp-block{border-left:2px solid var(--g);padding-left:18px;margin-bottom:22px;position:relative}
+.exp-dot{position:absolute;left:-5px;top:5px;width:8px;height:8px;border-radius:50%;background:var(--g)}
+.exp-role{font-size:13px;color:var(--g);font-weight:bold;margin-bottom:2px}
+.exp-company{font-size:11px;color:var(--blue);margin-bottom:2px}
+.exp-date{font-size:10px;color:var(--mut);margin-bottom:8px}
+.exp-bullet{font-size:11px;color:var(--txt);line-height:1.9;padding-left:8px}
+.exp-bullet::before{content:'> ';color:var(--gd)}
+.cert-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--bdr)}
+.cert-row:last-child{border-bottom:none}
+.cert-status{font-size:9px;padding:3px 8px;border-radius:2px;min-width:80px;text-align:center}
+.cs-earned{background:rgba(0,255,157,0.1);color:var(--g);border:1px solid var(--gd)}
+.cs-progress{background:rgba(255,184,0,0.1);color:var(--amb);border:1px solid var(--amb)}
+.cs-planned{background:rgba(255,68,68,0.05);color:var(--mut);border:1px solid var(--bdr)}
+.cert-name{font-size:12px;color:var(--txt);flex:1}
+.cert-vendor{font-size:10px;color:var(--mut)}
+.hobby-row{display:flex;gap:12px;margin-top:14px;flex-wrap:wrap}
+.hobby-card{flex:1;min-width:150px;border:1px solid var(--bdr);border-radius:4px;padding:14px;text-align:center}
+.hobby-icon{font-size:20px;margin-bottom:7px}
+.hobby-label{font-size:11px;color:var(--g);margin-bottom:4px}
+.hobby-desc{font-size:10px;color:var(--mut);line-height:1.5}
+.skill-tier{margin-bottom:16px}
+.tier-label{font-size:9px;letter-spacing:2px;margin-bottom:8px;padding:3px 9px;display:inline-block;border-radius:2px}
+.tl-comfort{color:var(--g);border:1px solid var(--gd);background:rgba(0,255,157,0.07)}
+.tl-learn{color:var(--amb);border:1px solid var(--amb);background:rgba(255,184,0,0.07)}
+.tl-explore{color:var(--blue);border:1px solid var(--blue);background:rgba(0,207,255,0.07)}
+.tier-pills{display:flex;flex-wrap:wrap;gap:7px}
+.tpill{padding:3px 10px;border-radius:2px;font-size:10px}
+.tp-c{border:1px solid var(--gd);color:var(--gd)}
+.tp-l{border:1px solid var(--amb);color:var(--amb)}
+.tp-e{border:1px solid var(--blue);color:var(--blue)}
+.ctf-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.ctf-platform{font-size:11px;color:var(--txt);min-width:100px}
+.ctf-bar-wrap{flex:1;height:5px;background:var(--bdr);border-radius:2px;overflow:hidden}
+.ctf-bar{height:100%;border-radius:2px;transition:width 1.2s ease}
+.ctf-stat{font-size:10px;min-width:80px;text-align:right}
+.resume-btn{display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:9px 18px;border:1px solid var(--g);border-radius:3px;color:var(--g);font-size:11px;cursor:pointer;background:rgba(0,255,157,0.05);transition:all 0.2s;font-family:'Share Tech Mono',monospace;text-decoration:none}
+.resume-btn:hover{background:rgba(0,255,157,0.14)}
+.learning-line{margin-top:12px;padding:9px 13px;border:1px solid var(--bdr);border-radius:3px;border-left:2px solid var(--amb);background:rgba(255,184,0,0.03)}
+.learning-label{font-size:9px;color:var(--amb);letter-spacing:2px;margin-bottom:3px}
+.learning-tags{font-size:11px;color:var(--txt)}
+.tcursor{display:inline-block;width:8px;height:13px;background:var(--g);vertical-align:middle;animation:blink 0.8s step-end infinite;margin-left:2px}
+@keyframes blink{50%{opacity:0}}
+.glitch{animation:glitch 7s infinite}
+@keyframes glitch{0%,94%,100%{transform:none;text-shadow:none}95%{transform:translateX(-2px);text-shadow:2px 0 #ff4444}96%{transform:translateX(2px);text-shadow:-2px 0 var(--g)}97%{transform:none}}
+/* STATUS BAR */
+.sbar{position:fixed;bottom:0;left:0;right:0;padding:5px 20px;background:var(--g);color:#000;font-size:10px;display:flex;justify-content:space-between;z-index:100;font-family:'Share Tech Mono',monospace}
+/* HOMELAB STATUS */
+.lab-status{display:inline-flex;align-items:center;gap:8px;padding:4px 10px;border-radius:2px;font-size:10px;margin-bottom:14px}
+.lab-init{border:1px solid var(--amb);color:var(--amb);background:rgba(255,184,0,0.07)}
+.lab-active{border:1px solid var(--g);color:var(--g);background:rgba(0,255,157,0.07)}
+.hw-row{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--bdr);font-size:11px}
+.hw-row:last-child{border-bottom:none}
+.hw-type{color:var(--mut);min-width:60px;font-size:10px}
+.hw-model{color:var(--g);flex:1}
+.hw-note{color:var(--mut);font-size:10px}
+.task-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--bdr);font-size:11px}
+.task-row:last-child{border-bottom:none}
+.task-icon{min-width:16px;text-align:center}
+.task-txt{color:var(--txt);flex:1}
+/* BLOG POST VIEW */
+#post-view{display:none;position:fixed;inset:0;z-index:200;background:var(--bg);padding:80px 28px 60px;overflow-y:auto}
+#post-view.open{display:block}
+.post-back{display:inline-flex;align-items:center;gap:6px;color:var(--gd);font-size:11px;cursor:pointer;margin-bottom:20px;padding:6px 0}
+.post-back:hover{color:var(--g)}
+.post-meta{font-size:10px;color:var(--mut);margin-bottom:10px;display:flex;gap:14px}
+.post-title{font-family:'Orbitron',monospace;font-size:18px;color:var(--g);margin-bottom:16px;line-height:1.4;letter-spacing:0.5px}
+.post-body{font-size:13px;color:var(--txt);line-height:2;white-space:pre-wrap;max-width:680px}
+/* PROGRESS BARS (certs only) */
+.prog-row{margin-bottom:10px}
+.prog-label{font-size:11px;color:var(--txt);margin-bottom:4px;display:flex;justify-content:space-between}
+.prog-bar{height:4px;background:var(--bdr);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:var(--g);border-radius:2px}
+</style>
+</head>
+<body>
+<div class="gridbg"></div>
+<div class="scanlines"></div>
+
+<!-- BOOT OVERLAY -->
+<div id="overlay">
+  <div class="boot-text" id="boot-text"></div>
+</div>
+
+<!-- POST VIEW (full blog post) -->
+<div id="post-view">
+  <div style="max-width:760px;margin:0 auto">
+    <div class="post-back" onclick="closePost()">← back to blog</div>
+    <div class="post-meta" id="post-meta"></div>
+    <div class="post-title" id="post-title"></div>
+    <div class="post-body" id="post-body"></div>
+  </div>
+</div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="tl">
+    <div class="hbg" id="hbg" onclick="toggleSidebar()"><span></span><span></span><span></span></div>
+    <span class="tb-title" id="tb-path">root@portfolio:~$</span>
+  </div>
+  <div style="display:flex;gap:5px;align-items:center"><div class="dot dr"></div><div class="dot da"></div><div class="dot dg"></div></div>
+</div>
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div class="nh">// MAIN</div>
+  <div class="ni active" onclick="nav('home',this,'./home')"><span class="ps">~$</span>./home</div>
+  <div class="ni" onclick="nav('about',this,'./about_me')"><span class="ps">~$</span>./about_me</div>
+  <div class="ni" onclick="nav('experience',this,'./experience')"><span class="ps">~$</span>./experience</div>
+  <div class="ni" onclick="nav('certs',this,'./certifications')"><span class="ps">~$</span>./certifications</div>
+  <div class="ndiv"></div>
+  <div class="nh">// PROJECTS</div>
+  <div class="ni" onclick="nav('noc',this,'./noc_automation')"><span class="ps">~$</span>./noc_automation</div>
+  <div class="ni" onclick="nav('network',this,'./network_labs')"><span class="ps">~$</span>./network_labs</div>
+  <div class="ni" onclick="nav('linux',this,'./linux_projects')"><span class="ps">~$</span>./linux_projects</div>
+  <div class="ni" onclick="nav('homelab',this,'./home_lab')"><span class="ps">~$</span>./home_lab</div>
+  <div class="ni" onclick="nav('school',this,'./school_docs')"><span class="ps">~$</span>./school_docs</div>
+  <div class="ni" onclick="nav('research',this,'./research')"><span class="ps">~$</span>./independent_research</div>
+  <div class="ndiv"></div>
+  <div class="nh">// CONTENT</div>
+  <div class="ni" onclick="nav('blog',this,'./blog')"><span class="ps">~$</span>./blog</div>
+  <div class="ndiv"></div>
+  <div class="ni" onclick="nav('contact',this,'./contact')"><span class="ps">~$</span>./contact</div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="content">
+
+  <!-- HOME -->
+  <div id="page-home" class="page active">
+    <div class="twind">
+      <div class="thead"><div class="dot dr"></div><div class="dot da"></div><div class="dot dg"></div><span>welcome.sh</span></div>
+      <div class="tbody">
+        <div class="pl"><span class="ps2">root@portfolio:~$</span><span class="pc"> ./welcome.sh</span></div>
+        <div class="out">
+          <div style="color:var(--g);font-size:11px;letter-spacing:3px;margin-bottom:10px">[ PORTFOLIO INITIALIZED ]</div>
+          <div>Hello — I'm <span class="hl glitch" id="h-name"></span></div>
+          <div id="h-title" style="color:var(--txt)"></div>
+          <div style="margin-top:10px">Former <span class="hl">Tier 2 NOC Intern</span> — building, breaking,</div>
+          <div>and documenting everything along the way.</div>
+          <div style="margin-top:12px">Status   <span class="hl" id="h-status"></span></div>
+          <div>Focus    <span class="hl">Network Defense · Automation · Linux</span></div>
+          <div>Off-duty <span class="hlp">Jiu Jitsu · Saxophone</span></div>
+        </div>
+        <div class="learning-line">
+          <div class="learning-label">// CURRENTLY LEARNING</div>
+          <div class="learning-tags" id="h-learning"></div>
+        </div>
+        <div style="margin-top:14px">
+          <a class="resume-btn" id="h-resume" href="#" target="_blank">
+            <span>↓</span> Download Resume <span style="font-size:9px;color:var(--mut)">.PDF</span>
+          </a>
+        </div>
+        <div class="pl" style="margin-top:14px"><span class="ps2">root@portfolio:~$</span><span class="tcursor"></span></div>
+      </div>
+    </div>
+    <div class="pills">
+      <div class="pill">Kali Linux</div><div class="pill">Wireshark</div><div class="pill">Nmap</div>
+      <div class="pill">Python</div><div class="pill">Bash</div><div class="pill">Cisco IOS</div>
+      <div class="pill">Packet Tracer</div><div class="pill">Metasploit</div><div class="pill">Snort</div><div class="pill">pfSense</div>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <div id="page-about" class="page">
+    <div class="twind">
+      <div class="thead"><div class="dot dr"></div><div class="dot da"></div><div class="dot dg"></div><span>whoami.txt</span></div>
+      <div class="tbody">
+        <div class="pl"><span class="ps2">root@portfolio:~$</span><span class="pc"> cat whoami.txt</span></div>
+        <div class="out">
+          <div>Name     <span class="hl" id="a-name"></span></div>
+          <div>Role     <span class="hl" id="a-title"></span></div>
+          <div>Status   <span class="hl">Aspiring · Open to Work</span></div>
+          <div>Based    <span class="hl" id="a-loc"></span></div>
+          <div>EDU      <span class="hl2" id="a-edu"></span></div>
+        </div>
+      </div>
+    </div>
+    <div class="twind">
+      <div class="thead"><div class="dot dr"></div><div class="dot da"></div><div class="dot dg"></div><span>story.txt</span></div>
+      <div class="tbody">
+        <div class="pl"><span class="ps2">root@portfolio:~$</span><span class="pc"> cat story.txt</span></div>
+        <div class="out" style="color:var(--txt);line-height:2;max-width:580px">
+          Write your real story here — what got you into this field? Keep it honest.
+          This is where recruiters decide if they like you as a person, not just a candidate.
+          <div style="margin-top:10px;color:var(--mut)">
+            I came up as a <span class="hl">Tier 2 NOC Intern</span> where I learned that networks don't care about theory — they fail at 3am and you have to figure it out. That shaped how I approach every system: always assume something will break, and build like it will.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-bottom:18px">
+      <div style="font-size:10px;color:var(--mut);margin-bottom:14px">// SKILL_TIERS.config</div>
+      <div class="skill-tier">
+        <div class="tier-label tl-comfort">COMFORTABLE</div>
+        <div class="tier-pills" style="margin-top:7px">
+          <div class="tpill tp-c">Networking / TCP-IP</div><div class="tpill tp-c">Linux Admin</div>
+          <div class="tpill tp-c">Wireshark</div><div class="tpill tp-c">Bash Scripting</div>
+          <div class="tpill tp-c">Cisco IOS</div><div class="tpill tp-c">NOC Operations</div><div class="tpill tp-c">Packet Tracer</div>
+        </div>
+      </div>
+      <div class="skill-tier">
+        <div class="tier-label tl-learn">LEARNING</div>
+        <div class="tier-pills" style="margin-top:7px">
+          <div class="tpill tp-l">Python</div><div class="tpill tp-l">IDS / IPS</div>
+          <div class="tpill tp-l">SIEM Tools</div><div class="tpill tp-l">Security+</div><div class="tpill tp-l">CCNA</div>
+        </div>
+      </div>
+      <div class="skill-tier">
+        <div class="tier-label tl-explore">EXPLORING</div>
+        <div class="tier-pills" style="margin-top:7px">
+          <div class="tpill tp-e">Pentesting</div><div class="tpill tp-e">Malware Analysis</div>
+          <div class="tpill tp-e">Red Team Ops</div><div class="tpill tp-e">Cloud Security</div>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:10px;color:var(--mut);margin-bottom:10px">// OFF_DUTY.config</div>
+    <div class="hobby-row">
+      <div class="hobby-card"><div class="hobby-icon">🥋</div><div class="hobby-label">Jiu Jitsu</div><div class="hobby-desc">BJJ teaches you to study a system, find the gaps, and apply controlled pressure. Sounds familiar.</div></div>
+      <div class="hobby-card"><div class="hobby-icon">🎷</div><div class="hobby-label">Saxophone</div><div class="hobby-desc">Pattern recognition and improvisation — both matter when a network goes down at 3am.</div></div>
+      <div class="hobby-card"><div class="hobby-icon">🐧</div><div class="hobby-label">Linux Tinkering</div><div class="hobby-desc">Old laptops don't die — they become Debian servers. Always something to harden or break on purpose.</div></div>
+    </div>
+  </div>
+
+  <!-- EXPERIENCE -->
+  <div id="page-experience" class="page">
+    <div class="sec-title">// EXPERIENCE.LOG</div>
+    <div class="twind">
+      <div class="thead"><div class="dot dr"></div><div class="dot da"></div><div class="dot dg"></div><span>employment_history.txt</span></div>
+      <div class="tbody">
+        <div class="pl"><span class="ps2">root@portfolio:~$</span><span class="pc"> cat employment_history.txt</span></div>
+        <div class="out" style="margin-top:10px">
+          <div class="exp-block">
+            <div class="exp-dot"></div>
+            <div class="exp-role">Tier 2 NOC Engineer — Intern</div>
+            <div class="exp-company">Company Name · City, State</div>
+            <div class="exp-date">Month YYYY – Month YYYY · X months</div>
+            <div style="margin-top:8px">
+              <div class="exp-bullet">Monitored and triaged network alerts across enterprise infrastructure using [tools]</div>
+              <div class="exp-bullet">Escalated and documented Tier 1 incidents, reducing avg triage time by [X]%</div>
+              <div class="exp-bullet">Developed automation scripts to reduce manual alert processing overhead</div>
+              <div class="exp-bullet">Maintained runbooks and updated NOC documentation for escalation procedures</div>
+              <div class="exp-bullet">Collaborated with senior engineers on root cause analysis for recurring outages</div>
+            </div>
+            <div class="pills" style="margin-top:10px">
+              <div class="pill">SNMP</div><div class="pill">SolarWinds</div><div class="pill">ServiceNow</div><div class="pill">Python</div><div class="pill">Network Triage</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="twind">
+      <div class="thead"><div class="dot dr"></div><div class="dot da"></div><div class="dot dg"></div><span>education.txt</span></div>
+      <div class="tbody">
+        <div class="out">
+          <div class="exp-block" style="margin-bottom:6px">
+            <div class="exp-dot"></div>
+            <div class="exp-role" id="e-degree"></div>
+            <div class="exp-company hl2" id="e-school"></div>
+            <div class="exp-date" id="e-dates"></div>
+            <div style="margin-top:8px">
+              <div class="exp-bullet">Relevant coursework: Network Security, Routing & Switching, Systems Administration</div>
+              <div class="exp-bullet">Capstone: NOC Automation Pipeline — end-to-end alert triage system</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CERTIFICATIONS -->
+  <div id="page-certs" class="page">
+    <div class="sec-title">// CERTIFICATIONS.TRACKER</div>
+    <div class="twind">
+      <div class="thead"><div class="dot dr"></div><div class="dot da"></div><div class="dot dg"></div><span>certs.sh --status</span></div>
+      <div class="tbody">
+        <div class="pl"><span class="ps2">root@portfolio:~$</span><span class="pc"> ./certs.sh --status</span></div>
+        <div class="out" style="margin-top:10px" id="certs-list"></div>
+      </div>
+    </div>
+    <div style="font-size:10px;color:var(--mut);margin-bottom:10px">// PROGRESS</div>
+    <div class="prog-row"><div class="prog-label"><span style="color:var(--txt)">CompTIA Trifecta</span><span class="hl">67%</span></div><div class="prog-bar"><div class="prog-fill" style="width:67%"></div></div></div>
+    <div class="prog-row"><div class="prog-label"><span style="color:var(--txt)">Overall Roadmap</span><span class="hl">30%</span></div><div class="prog-bar"><div class="prog-fill" style="width:30%"></div></div></div>
+    <div style="font-size:10px;color:var(--mut);margin:18px 0 12px">// CTF_STATS.live</div>
+    <div class="twind">
+      <div class="thead"><div class="dot dr"></div><div class="dot da"></div><div class="dot dg"></div><span>ctf_stats.sh</span></div>
+      <div class="tbody">
+        <div class="pl"><span class="ps2">root@portfolio:~$</span><span class="pc"> ./ctf_stats.sh</span></div>
+        <div class="out" style="margin-top:12px" id="ctf-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOC -->
+  <div id="page-noc" class="page">
+    <div class="sec-title">// NOC_AUTOMATION.DIR</div>
+    <div class="twind" style="margin-bottom:14px">
+      <div class="thead"><div class="dot dr"></div><div class="dot da"></div><div class="dot dg"></div><span>readme.txt</span></div>
+      <div class="tbody"><div class="out">Docs, scripts, and workflows from NOC automation work — alert triage, ticket automation, runbooks, and monitoring.</div></div>
+    </div>
+    <div class="grid2" id="noc-grid"></div>
+  </div>
+
+  <!-- NETWORK LABS -->
+  <div id="page-network" class="page">
+    <div class="sec-title">// NETWORK_LABS.DIR</div>
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab(this,'tab-pt')">Packet Tracer</div>
+      <div class="tab" onclick="switchTab(this,'tab-hw')">Physical Labs</div>
+    </div>
+    <div id="tab-pt" class="tab-panel active"><div class="grid2" id="pt-grid"></div></div>
+    <div id="tab-hw" class="tab-panel"><div class="grid2" id="hw-grid"></div></div>
+  </div>
+
+  <!-- LINUX -->
+  <div id="page-linux" class="page">
+    <div class="sec-title">// LINUX_PROJECTS.DIR</div>
+    <div class="twind" style="margin-bottom:14px">
+      <div class="thead"><div class="dot dr"></div><div class="dot da"></div><div class="dot dg"></div><span>distros.txt</span></div>
+      <div class="tbody"><div class="out">
+        <div>Primary  <span class="hl">Debian 12 (Bookworm)</span></div>
+        <div>Security <span class="hl">Kali Linux (rolling)</span></div>
+        <div>Lab VMs  <span class="hl2">Ubuntu Server · Rocky Linux · Alpine</span></div>
+      </div></div>
+    </div>
+    <div class="grid2" id="linux-grid"></div>
+  </div>
+
+  <!-- HOME LAB -->
+  <div id="page-homelab" class="page">
+    <div class="sec-title">// HOME_LAB.DIR</div>
+    <div class="twind">
+      <div class="thead"><div class="dot dr"></div><div class="dot da"></div><div class="dot dg"></div><span>lab_status.sh</span></div>
+      <div class="tbody">
+        <div class="pl"><span class="ps2">root@portfolio:~$</span><span class="pc"> ./lab_status.sh</span></div>
+        <div class="out" style="margin-top:10px">
+          <div id="lab-status-badge"></div>
+          <div id="lab-note" style="font-size:11px;color:var(--mut);margin-bottom:14px"></div>
+          <div style="font-size:10px;color:var(--mut);margin-bottom:8px;letter-spacing:1px">// HARDWARE INVENTORY</div>
+          <div id="hw-inventory"></div>
+        </div>
+      </div>
+    </div>
+    <div class="twind">
+      <div class="thead"><div class="dot dr"></div><div class="dot da"></div><div class="dot dg"></div><span>build_roadmap.txt</span></div>
+      <div class="tbody">
+        <div class="pl"><span class="ps2">root@portfolio:~$</span><span class="pc"> cat build_roadmap.txt</span></div>
+        <div class="out" style="margin-top:10px" id="lab-tasks"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCHOOL DOCS -->
+  <div id="page-school" class="page">
+    <div class="sec-title">// SCHOOL_DOCS.DIR</div>
+    <div id="school-list"></div>
+  </div>
+
+  <!-- RESEARCH -->
+  <div id="page-research" class="page">
+    <div class="sec-title">// INDEPENDENT_RESEARCH.DIR</div>
+    <div id="research-list"></div>
+  </div>
+
+  <!-- BLOG -->
+  <div id="page-blog" class="page">
+    <div class="sec-title">// BLOG.FEED</div>
+    <div id="blog-list"></div>
+  </div>
+
+  <!-- CONTACT -->
+  <div id="page-contact" class="page">
+    <div class="twind">
+      <div class="thead"><div class="dot dr"></div><div class="dot da"></div><div class="dot dg"></div><span>contact.sh</span></div>
+      <div class="tbody">
+        <div class="pl"><span class="ps2">root@portfolio:~$</span><span class="pc"> ./contact.sh</span></div>
+        <div class="out" id="contact-info"></div>
+        <div style="margin-top:4px">
+          <a class="resume-btn" id="c-resume" href="#" target="_blank">
+            <span>↓</span> Download Resume <span style="font-size:9px;color:var(--mut)">.PDF</span>
+          </a>
+        </div>
+        <div class="pl" style="margin-top:12px"><span class="ps2">root@portfolio:~$</span><span class="tcursor"></span></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end #content -->
+
+<div class="sbar">
+  <span id="sbar-left">root@portfolio</span>
+  <span id="clk"></span>
+</div>
+
+<script src="content.js"></script>
+<script>
+// ── CLOCK ──────────────────────────────────────────────────
+function tick(){document.getElementById('clk').textContent=new Date().toLocaleTimeString('en-US',{hour12:false})+' UTC';}
+tick(); setInterval(tick,1000);
+
+// ── SIDEBAR / NAV ──────────────────────────────────────────
+let sbOpen=false;
+function toggleSidebar(){
+  sbOpen=!sbOpen;
+  document.getElementById('sidebar').classList.toggle('open',sbOpen);
+  document.getElementById('hbg').classList.toggle('open',sbOpen);
+}
+function nav(name,el,path){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  if(el)el.classList.add('active');
+  document.getElementById('tb-path').textContent='root@portfolio:'+path;
+  document.getElementById('sbar-left').textContent='root@portfolio — '+path;
+  if(sbOpen)toggleSidebar();
+}
+function switchTab(el,target){
+  el.parentElement.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.parentElement.parentElement.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(target).classList.add('active');
+}
+
+// ── BLOG POST VIEW ─────────────────────────────────────────
+function openPost(i){
+  const p=CONTENT.blog[i];
+  document.getElementById('post-meta').innerHTML=`<span style="color:var(--amb)">[${p.category}]</span><span>${p.date}</span><span style="color:var(--g)">${p.readTime}</span>`;
+  document.getElementById('post-title').textContent=p.title;
+  document.getElementById('post-body').textContent=p.content;
+  document.getElementById('post-view').classList.add('open');
+  window.scrollTo(0,0);
+}
+function closePost(){document.getElementById('post-view').classList.remove('open');}
+
+// ── HELPERS ────────────────────────────────────────────────
+function card(c){return`<div class="card"><div class="ctag">[ ${c.tag} ]</div><div class="cname">${c.name}</div><div class="cdesc">${c.desc}</div><div class="cbadge">${c.badge}</div></div>`;}
+
+// ── RENDER FROM CONTENT.JS ─────────────────────────────────
+function render(){
+  const I=CONTENT.info;
+
+  // Page title
+  document.title=I.name+' — Portfolio';
+
+  // Home
+  document.getElementById('h-name').textContent=I.name;
+  document.getElementById('h-title').textContent=I.title;
+  document.getElementById('h-status').textContent='● '+I.status;
+  document.getElementById('h-learning').textContent=I.currentlyLearning.join(' · ');
+  document.getElementById('h-resume').href=I.resumeUrl;
+
+  // About
+  document.getElementById('a-name').textContent=I.name;
+  document.getElementById('a-title').textContent=I.title;
+  document.getElementById('a-loc').textContent=I.location;
+  document.getElementById('a-edu').textContent=I.school;
+
+  // Experience / education
+  const parts=I.school.split('—');
+  document.getElementById('e-degree').textContent=(parts[1]||'Your Degree').trim();
+  document.getElementById('e-school').textContent=(parts[0]||'Your School').trim();
+  document.getElementById('e-dates').textContent=I.schoolDates;
+
+  // Contact
+  document.getElementById('contact-info').innerHTML=`
+    <div>GitHub    <span class="hl">${I.github}</span></div>
+    <div>LinkedIn  <span class="hl">${I.linkedin}</span></div>
+    <div>Email     <span class="hl">${I.email}</span></div>
+    <div>HackBox   <span class="hl2">${I.hackthebox}</span></div>
+    <div>TryHackMe <span class="hl2">${I.tryhackme}</span></div>
+    <div style="margin-top:10px;color:var(--mut)">PGP key available on request. Response &lt;24h.</div>`;
+  document.getElementById('c-resume').href=I.resumeUrl;
+
+  // Certs
+  const certColors={earned:'cs-earned',progress:'cs-progress',planned:'cs-planned'};
+  const certLabels={earned:'✔ EARNED',progress:'~ IN PROGRESS',planned:'PLANNED'};
+  document.getElementById('certs-list').innerHTML=CONTENT.certs.map(c=>`
+    <div class="cert-row">
+      <div class="cert-status ${certColors[c.status]}">${certLabels[c.status]}</div>
+      <div><div class="cert-name">${c.name}</div><div class="cert-vendor">${c.vendor}</div></div>
+    </div>`).join('');
+
+  // CTF stats
+  const ctfColors=['var(--g)','var(--blue)','var(--amb)'];
+  document.getElementById('ctf-list').innerHTML=CONTENT.ctfStats.map((s,i)=>`
+    <div class="ctf-row">
+      <div class="ctf-platform">${s.platform}</div>
+      <div class="ctf-bar-wrap"><div class="ctf-bar" style="width:${s.pct}%;background:${ctfColors[i%3]}"></div></div>
+      <div class="ctf-stat" style="color:${ctfColors[i%3]}">${s.stat}</div>
+    </div>`).join('');
+
+  // Project grids
+  document.getElementById('noc-grid').innerHTML=CONTENT.nocProjects.map(card).join('');
+  document.getElementById('pt-grid').innerHTML=CONTENT.packetTracerLabs.map(card).join('');
+  document.getElementById('hw-grid').innerHTML=CONTENT.physicalLabs.map(card).join('');
+  document.getElementById('linux-grid').innerHTML=CONTENT.linuxProjects.map(card).join('');
+
+  // Home lab
+  const lab=CONTENT.homelab;
+  const isActive=lab.status==='active';
+  document.getElementById('lab-status-badge').innerHTML=`<div class="lab-status ${isActive?'lab-active':'lab-init'}">● LAB ${lab.status.toUpperCase()}</div>`;
+  document.getElementById('lab-note').textContent=lab.statusNote;
+  document.getElementById('hw-inventory').innerHTML=lab.hardware.map(h=>`
+    <div class="hw-row">
+      <div class="hw-type">${h.type}</div>
+      <div class="hw-model">${h.model} <span style="color:var(--mut);font-size:10px">×${h.qty}</span></div>
+      <div class="hw-note">${h.notes}</div>
+    </div>`).join('');
+  const taskIcon={planned:'<span style="color:var(--mut)">[ ]</span>','in-progress':'<span style="color:var(--amb)">[-]</span>',done:'<span style="color:var(--g)">[✔]</span>'};
+  document.getElementById('lab-tasks').innerHTML=lab.planned.map(t=>`
+    <div class="task-row">
+      <div class="task-icon">${taskIcon[t.status]}</div>
+      <div class="task-txt" style="color:${t.status==='done'?'var(--g)':t.status==='in-progress'?'var(--amb)':'var(--txt)'}">${t.task}</div>
+    </div>`).join('');
+
+  // School docs
+  document.getElementById('school-list').innerHTML=CONTENT.schoolDocs.map(d=>`
+    <div class="blog-card">
+      <div class="blog-meta"><span style="color:var(--g)">[${d.tag}]</span><span>${d.course}</span></div>
+      <div class="blog-title">${d.title}</div>
+      <div class="blog-preview">${d.preview}</div>
+      <div class="cbadge" style="margin-top:8px">${d.badge}</div>
+    </div>`).join('');
+
+  // Research
+  document.getElementById('research-list').innerHTML=CONTENT.research.map(r=>`
+    <div class="blog-card">
+      <div class="blog-meta"><span style="color:var(--blue)">[RESEARCH]</span><span>${r.date}</span></div>
+      <div class="blog-title">${r.title}</div>
+      <div class="blog-preview">${r.preview}</div>
+      <div class="cbadge" style="margin-top:8px">${r.badge}</div>
+    </div>`).join('');
+
+  // Blog feed
+  document.getElementById('blog-list').innerHTML=CONTENT.blog.map((p,i)=>`
+    <div class="blog-card" onclick="openPost(${i})">
+      <div class="blog-meta"><span style="color:var(--amb)">[${p.category}]</span><span>${p.date}</span><span style="color:var(--g)">${p.readTime}</span></div>
+      <div class="blog-title">${p.title}</div>
+      <div class="blog-preview">${p.preview}</div>
+    </div>`).join('');
+}
+
+// ── BOOT SEQUENCE ──────────────────────────────────────────
+const bootLines=[
+  'BIOS v3.1 ... OK',
+  'Loading kernel modules ...',
+  'Mounting /dev/sda1 ... OK',
+  '> eth0: CONNECTED · firewall: ACTIVE',
+  '> IDS engine: ONLINE',
+  '> content.js: LOADED',
+  '> Resume: LINKED',
+  '',
+  '████████████████ 100%',
+  '',
+  `Welcome, ${CONTENT.info.name.split(' ')[0] || 'engineer'}. ${Object.keys(CONTENT).length * 2} sections ready.`,
+  '',
+];
+let bi=0;
+const bEl=document.getElementById('boot-text'),ov=document.getElementById('overlay');
+function bootNext(){
+  if(bi>=bootLines.length){setTimeout(()=>ov.classList.add('hidden'),600);return;}
+  const d=document.createElement('div');
+  d.textContent=bootLines[bi]||'\u00A0';
+  if(bootLines[bi].startsWith('>'))d.style.color='#00ff9d';
+  bEl.appendChild(d);
+  bi++;
+  setTimeout(bootNext,bi<5?75:115);
+}
+
+render();
+bootNext();
+</script>
+</body>
+</html>
