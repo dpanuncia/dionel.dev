@@ -38,9 +38,7 @@ const CONTENT = {
   //  CTF / PLATFORM STATS — update whenever your stats change
   // ----------------------------------------------------------
   ctfStats: [
-    { platform: "HackTheBox",   stat: "Rank: Pro Hacker", pct: 55 },
-    { platform: "TryHackMe",    stat: "47 rooms",          pct: 70 },
-    { platform: "Cisco NetAcad", stat: "12 courses",        pct: 80 },
+    { platform: "Cisco NetAcad", stat: "7 courses",        pct: 80 },
   ],
 
   // ----------------------------------------------------------
@@ -48,7 +46,7 @@ const CONTENT = {
   //  status: "earned" | "progress" | "planned"
   // ----------------------------------------------------------
   certs: [
-    { name: "URSCA-Unifi Routing, Switching and CyberSecurity Adminstrator",                vendor: "Wifi-U",       status: "earned"   },
+    { name: "URSCA-Unifi Routing, Switching and CyberSecurity Administrator",                vendor: "Wifi-U",       status: "earned"   },
     { name: "CompTIA Security+",         vendor: "CompTIA · SY0-701",               status: "progress" },
     { name: "Cisco CCNA",                vendor: "Cisco · 200-301",                 status: "planned"  },
 
