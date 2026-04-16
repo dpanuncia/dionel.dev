@@ -21,8 +21,8 @@ const CONTENT = {
     name:        "Dionel Panuncia",
     title:       "Network & Cybersecurity Engineer",
     location:    "Grand Rapids, Michigan",
-    school:      "Grand Rapids Community College — Network Administration" "Davenport University - Cyber Defense",
-    schoolDates: "2023 – 2025"
+  school:      "GRCC — Network Administration · Davenport University — Cyber Defense",
+schoolDates: "2023 – 2026 (Expected)",
     "2026-2026(Expected)",
     email:       "dpanuncia@gmail.com",
     github:      "github.com/dpanuncia",
